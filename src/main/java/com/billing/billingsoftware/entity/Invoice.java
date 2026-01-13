@@ -1,18 +1,19 @@
 package com.billing.billingsoftware.entity;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class Invoice {
 
     int invoiceId;
-    Date invoiceDate;
+    LocalDateTime invoiceDate;
     Customer customer;
     double totalAmount;
     double totalTax;
     double discount;
    double finalAmount;
 
-    public Invoice(int invoiceId, Date invoiceDate, Customer customer, double totalAmount, double totalTax, double discount, double finalAmount) {
+    public Invoice(int invoiceId,LocalDateTime invoiceDate, Customer customer, double totalAmount, double totalTax, double discount, double finalAmount) {
         this.invoiceId = invoiceId;
         this.invoiceDate = invoiceDate;
         this.customer = customer;
@@ -30,11 +31,11 @@ public class Invoice {
         this.invoiceId = invoiceId;
     }
 
-    public Date getInvoiceDate() {
+    public LocalDateTime getInvoiceDate() {
         return invoiceDate;
     }
 
-    public void setInvoiceDate(Date invoiceDate) {
+    public void setInvoiceDate(LocalDateTime invoiceDate) {
         this.invoiceDate = invoiceDate;
     }
 

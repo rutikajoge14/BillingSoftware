@@ -2,11 +2,15 @@ package com.billing.billingsoftware.entity;
 
 public class Customer {
 
-    int customerId;
-    String customerName;
-    String customerPhoneNo;
-    String customerEmail;
-    String customerAddress;
+    private int customerId;
+    private String customerName;
+    private String customerPhoneNo;
+    private String customerEmail;
+    private String customerAddress;
+
+    public Customer (){
+
+    }
 
     public int getCustomerId() {
         return customerId;
