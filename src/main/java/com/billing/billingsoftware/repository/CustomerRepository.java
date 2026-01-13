@@ -1,6 +1,7 @@
 package com.billing.billingsoftware.repository;
 
 import com.billing.billingsoftware.entity.Customer;
+import com.billing.billingsoftware.exception.ResourceNotFoundException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -29,42 +30,55 @@ public class CustomerRepository {
 //                    .orElse(null);
 //        }
 
-    private final JdbcTemplate jdbc;
 
-    public CustomerRepository(JdbcTemplate jdbc) {
-        this.jdbc = jdbc;
+        private final JdbcTemplate jdbc;
+
+        public CustomerRepository(JdbcTemplate jdbc) {
+            this.jdbc = jdbc;
+        }
+
+        public Customer save(Customer customer) {
+            String sql = "INSERT INTO customers (customer_name, customer_phone, customer_email, customer_address) VALUES (?, ?, ?, ?)";
+            jdbc.update(
+                    sql,
+                    customer.getCustomerName(),
+                    customer.getCustomerPhoneNo(),
+                    customer.getCustomerEmail(),
+                    customer.getCustomerAddress()
+            );
+            return customer;
+        }
+
+
+        public List<Customer> findAll() {
+            String sql = "SELECT * FROM customers";
+            return jdbc.query(sql, (rs, rowNum) -> new Customer(
+                    rs.getInt("customer_id"),  // make sure column name matches your table
+                    rs.getString("customer_name"),
+                    rs.getString("customer_phone"),
+                    rs.getString("customer_email"),
+                    rs.getString("customer_address")
+            ));
+        }
+
+
+        public Customer findById(int id) {
+            String sql = "SELECT * FROM customers WHERE customer_id = ?";
+            try {
+                return jdbc.queryForObject(
+                        sql,
+                        new Object[]{id},
+                        (rs, rowNum) -> new Customer(
+                                rs.getInt("customer_id"),
+                                rs.getString("customer_name"),
+                                rs.getString("customer_phone"),
+                                rs.getString("customer_email"),
+                                rs.getString("customer_address")
+                        )
+                );
+            } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+                // If no customer found, throw custom exception
+                throw new ResourceNotFoundException("Customer not found with ID: " + id);
+            }
+        }
     }
-
-    public Customer save(Customer customer){
-        jdbc.update(
-                "INSERT INTO customers (name, phone, email, address)   VALUES (?,?,?,?)",
-                customer.getCustomerName(),
-                customer.getCustomerPhoneNo(),
-                customer.getCustomerEmail(),
-                customer.getCustomerAddress()
-        );
-        return customer;
-    }
-
-    public List<Customer> findAll(){
-        return jdbc.query("SELECT * FROM customers" ,(rs, rowNum) -> new Customer(
-                rs.getInt("id"), rs.getString("name"),rs.getString("phone"),rs.getString("email"),
-                rs.getString("address")
-        ));
-    }
-
-    public Customer findById(int id){
-        return jdbc.queryForObject("SELECT * FROM customers WHERE id=?",
-                new Object[]{id},
-                (rs, rowNum) -> new Customer(
-                        rs.getInt("id"),
-                                rs.getString("name"),
-                                rs.getString("phone"),
-                                rs.getString("email"),
-                                rs.getString("address")
-                )
-        );
-    }
-}
-
-
